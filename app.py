@@ -3,7 +3,7 @@ import os.path
 import cherrypy
 
 import conf
-from model.search import find_movie
+from model.search import find_movie, random_movies
 
 class Root(object):
     def __init__(self):
@@ -14,20 +14,28 @@ class Root(object):
         with open('static/index.html') as f:
             return f.read()
 
+    def prep_movie(self, movie):
+        movie["rating"] = None
+        movie["title"] = movie["Title"]
+        movie["description"] = movie["Plot"]
+        return movie
+
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def add_movie(self):
-        print "HERE"
-        print "------------"
         result = {"operation": "request", "result": "success"}
         content = cherrypy.request.json
         print content
         movie = find_movie(content["name"])
-        movie["rating"] = None
-        movie["title"] = movie["Title"]
-        movie["description"] = movie["Plot"]
-        result["movie"] = movie
+        result["movie"] = self.prep_movie(movie)
+        return result
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def random_movies(self):
+        result = {"operation": "request", "result": "success"}
+        result["movies"] = [self.prep_movie(m) for m in random_movies(5)]
         return result
 
 def main():

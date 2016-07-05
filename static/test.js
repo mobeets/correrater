@@ -43,11 +43,31 @@ function addRatingWidget(shopItem, data) {
   var r = rating(ratingElement, currentRating, maxRating, callback);
 }
 
+function addMovies(objs) {
+  for (var i = 0; i < objs.length; i++) {
+    addMovie(objs[i]);
+  }
+}
+
+function fetchRandomMovies() {
+  $.ajax({
+      type: "GET",
+      url: "random_movies",
+      // data: JSON.stringify(obj),
+      contentType: 'application/json',
+      dataType: 'json',
+      error: function(data) {
+          console.log(data);
+      },
+      success: function(data) {
+          console.log(data["movies"]);
+          addMovies(data["movies"]);
+      }
+  });
+}
+
 function addMovie(obj) {
   data.push(obj);
-  console.log(obj["title"]);
-  console.log(obj.description);
-  console.log(obj.rating);
   addRatingWidget(buildShopItem(obj), obj);
 }
 
@@ -74,12 +94,18 @@ function queryMovie() {
 $( document ).ready(function() {
 
     var shop = $("#shop");
-    (function init() {
-      for (var i = 0; i < data.length; i++) {
-        addRatingWidget(buildShopItem(data[i]), data[i]);
-      }
-    })();
+    // (function init() {
+    //   for (var i = 0; i < data.length; i++) {
+    //     addRatingWidget(buildShopItem(data[i]), data[i]);
+    //   }
+    // })();
 
+    fetchRandomMovies();
     $("#add-movie").click(queryMovie);
+    $("#movie-input").keyup(function(event){
+        if(event.keyCode == 13){
+            $("#add-movie").click();
+        }
+    });
 
 });
