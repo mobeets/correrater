@@ -15,6 +15,7 @@ class Root(object):
             return f.read()
 
     def prep_movie(self, movie):
+        print movie
         movie["rating"] = None
         movie["title"] = movie["Title"]
         movie["description"] = movie["Plot"]

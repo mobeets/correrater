@@ -1,3 +1,4 @@
+import os.path
 import re
 import glob
 import json
@@ -28,9 +29,24 @@ def get_movie_ids():
     return list(set(ids))
 
 def random_movies(n):
-    # nums = ["tt" + str(int(random.random()*2155529)).zfill(7) for i in xrange(n)]
-    ids = get_movie_ids()
-    ids = [random.choice(ids) for i in xrange(n)]
+    allms = load_imdb_objs()
+    ms = []
+    for i in xrange(n):
+        j = random.choice(xrange(len(allms)))
+        ms.append(allms[j])
+        allms.pop(j)
+    return ms
+
+def random_movies_slow(n):
+    """
+    has to call OMDB api for each random id
+    """
+    all_ids = get_movie_ids()
+    ids = []
+    for i in xrange(n):
+        curid = random.choice(xrange(len(all_ids)))
+        ids.append(all_ids[curid])
+        all_ids.pop(curid)
     urls = [urlf(entry, tag="i") for entry in ids]
     return [load_movie(url) for url in urls]
 
@@ -39,7 +55,6 @@ def fetch_movie_ids(url=TOP_URL):
     return list(set(re.findall('/title/(\w+)/', source)))
 
 def stash_imdb_ids():
-    import os.path
     nms = ["top", "new", "popular"]
     urls = [TOP_URL, NEW_URL, POP_URL]
     for (nm, url) in zip(nms, urls):
@@ -48,6 +63,22 @@ def stash_imdb_ids():
         with open(fnm, 'w') as f:
             f.write('\n'.join(ids))
 
+def stash_imdb_objs():
+    ids = get_movie_ids()
+    print len(ids)
+    ids = ids[:100]
+    ms = [load_movie(urlf(curid, tag="i")) for curid in ids]
+    fnm = os.path.join('data', 'imdb_stash.json')
+    with open(fnm, 'w') as f:
+        f.write(json.dumps(ms, indent=4))
+
+def load_imdb_objs():
+    fnm = os.path.join('data', 'imdb_stash.json')
+    with open(fnm) as f:
+        return json.load(f)
+
 if __name__ == '__main__':
     # stash_imdb_ids()
-    print get_movie_ids()
+    # print get_movie_ids()
+    stash_imdb_objs()
+    # print load_imdb_objs()

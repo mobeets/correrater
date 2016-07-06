@@ -1,21 +1,8 @@
 // http://callmenick.com/post/five-star-rating-component-with-javascript-css
-var data = [
-  {
-    title: "Dope Hat",
-    description: "Dope hat dolor sit amet, consectetur adipisicing elit. Commodi consectetur similique ullam natus ut debitis praesentium.",
-    rating: null
-  },
-  {
-    title: "Hot Top",
-    description: "Hot top dolor sit amet, consectetur adipisicing elit. Commodi consectetur similique ullam natus ut debitis praesentium.",
-    rating: null
-  },
-  {
-    title: "Fresh Kicks",
-    description: "Fresh kicks dolor sit amet, consectetur adipisicing elit. Commodi consectetur similique ullam natus ut debitis praesentium.",
-    rating: null
-  }
+var all_movies = [
 ];
+
+var ratingNames = ["imdbRating", "tomatoMeter", "tomatoRating", "tomatoUserMeter", "tomatoUserRating"];
 
 function buildShopItem(data) {
   var shopItem = document.createElement('div');
@@ -34,12 +21,13 @@ function buildShopItem(data) {
   return shopItem;
 }
 
+
 // ADD RATING WIDGET
 function addRatingWidget(shopItem, data) {
   var ratingElement = shopItem.querySelector('.c-rating');
   var currentRating = data.rating;
   var maxRating = 5;
-  var callback = function(rating) { alert(rating); };
+  var callback = function(rating) { data["userRating"] = rating; };
   var r = rating(ratingElement, currentRating, maxRating, callback);
 }
 
@@ -67,12 +55,12 @@ function fetchRandomMovies() {
 }
 
 function addMovie(obj) {
-  data.push(obj);
+  all_movies.push(obj);
   addRatingWidget(buildShopItem(obj), obj);
 }
 
 function queryMovie() {
-  console.log($("#movie-input").val());
+  // console.log($("#movie-input").val());
   val = $("#movie-input").val();
   obj = {"name": val};
   $.ajax({
@@ -91,14 +79,106 @@ function queryMovie() {
   });
 }
 
+/*
+ *  Source: http://stevegardner.net/2012/06/11/javascript-code-to-calculate-the-pearson-correlation-coefficient/
+ */
+function getPearsonCorrelation(x, y) {
+    var shortestArrayLength = 0;
+     
+    if(x.length == y.length) {
+        shortestArrayLength = x.length;
+    } else if(x.length > y.length) {
+        shortestArrayLength = y.length;
+        console.error('x has more items in it, the last ' + (x.length - shortestArrayLength) + ' item(s) will be ignored');
+    } else {
+        shortestArrayLength = x.length;
+        console.error('y has more items in it, the last ' + (y.length - shortestArrayLength) + ' item(s) will be ignored');
+    }
+  
+    var xy = [];
+    var x2 = [];
+    var y2 = [];
+  
+    for(var i=0; i<shortestArrayLength; i++) {
+        xy.push(x[i] * y[i]);
+        x2.push(x[i] * x[i]);
+        y2.push(y[i] * y[i]);
+    }
+  
+    var sum_x = 0;
+    var sum_y = 0;
+    var sum_xy = 0;
+    var sum_x2 = 0;
+    var sum_y2 = 0;
+  
+    for(var i=0; i< shortestArrayLength; i++) {
+        sum_x += x[i];
+        sum_y += y[i];
+        sum_xy += xy[i];
+        sum_x2 += x2[i];
+        sum_y2 += y2[i];
+    }
+  
+    var step1 = (shortestArrayLength * sum_xy) - (sum_x * sum_y);
+    var step2 = (shortestArrayLength * sum_x2) - (sum_x * sum_x);
+    var step3 = (shortestArrayLength * sum_y2) - (sum_y * sum_y);
+    var step4 = Math.sqrt(step2 * step3);
+    var answer = step1 / step4;
+  
+    return answer
+}
+
+
+function getCorrelation(ratingName) {
+  userRevs = [];
+  compRevs = [];
+  for (var i = 0; i < all_movies.length; i++) {
+    uv = all_movies[i].userRating;
+    cv = all_movies[i][ratingName];
+    if (!isNaN(cv) && typeof uv !== "undefined") {
+      userRevs.push(uv);
+      compRevs.push(parseInt(cv));
+    }
+  }
+  console.log(ratingName);
+  console.log(userRevs);
+  console.log(compRevs);
+  console.log("-------");
+  return getPearsonCorrelation(userRevs, compRevs);
+}
+
+function submitRatings() {
+  corrs = [];
+  msgs = "";
+  for (var i = 0; i < ratingNames.length; i++) {
+    corr = getCorrelation(ratingNames[i]);
+    corrs.push(corr);
+    msgs += "<br>Your correlation with the " + ratingNames[i] + " rating is " + corr.toFixed(3) + ".";
+  }
+  $('#correlation').html(msgs);
+}
+
+function submitRatings0() {
+  userRevs = [];
+  compRevs = [];
+  for (var i = 0; i < all_movies.length; i++) {
+    uv = all_movies[i].userRating;
+    cv = all_movies[i].tomatoRating;
+    if (!isNaN(cv) && typeof uv !== "undefined") {
+      userRevs.push(uv);
+      compRevs.push(parseInt(cv));
+    }
+  }
+  val = getPearsonCorrelation(userRevs, compRevs);
+  console.log(userRevs);
+  console.log(compRevs);
+  console.log(val);
+  $('#correlation').html("Your correlation with the Rotten Tomatoes user rating is " + val.toFixed(3) + ".");
+}
+
 $( document ).ready(function() {
 
     var shop = $("#shop");
-    // (function init() {
-    //   for (var i = 0; i < data.length; i++) {
-    //     addRatingWidget(buildShopItem(data[i]), data[i]);
-    //   }
-    // })();
 
     fetchRandomMovies();
     $("#add-movie").click(queryMovie);
@@ -107,5 +187,7 @@ $( document ).ready(function() {
             $("#add-movie").click();
         }
     });
+    $("#more-movies").click(fetchRandomMovies);
+    $("#submit-ratings").click(submitRatings);
 
 });

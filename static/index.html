@@ -40,23 +40,50 @@
 <div class="container">
 
   <div class="starter-template">
-    <h1>Who to trust?</h1>
-    <p class="lead">Find out whose movie ratings agree with you most.</p>
+    <h1>CorreRate</h1>
+    <p class="lead">Rate the movies below to find out whose movie ratings agree with you the most.</p>
+    <div class="col-lg-3"></div>
+    <p class="description col-lg-6">There's a new movie in theatres and Rotten Tomatoes gives it 80%. But why should you care, unless your movie ratings correlate well with Rotten Tomatoes?</p>
+    <div class="col-lg-3"></div>
   </div>
 
   <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-2"></div>
+    <div id="shop" class="col-lg-8 movies"></div>
+    <div class="col-lg-2"></div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4"></div>
+    <div class="col-lg-4">
       <div class="input-group">
-        <input id="movie-input" type="text" class="form-control" placeholder="Add a movie...">
+        <input id="movie-input" type="text" class="form-control" placeholder="Add a movie manually, if you'd like.">
         <span class="input-group-btn">
-          <button id="add-movie" class="btn btn-default" type="button">Add</button>
+          <button id="add-movie" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp; Add</button>
         </span>
       </div><!-- /input-group -->
     </div><!-- /.col-lg-6 -->
+    <div class="col-lg-4"></div>
   </div><!-- /.row -->
 
+  <div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-sm-4">
+          <button id="more-movies" class="btn btn-default" type="button">More Movies <span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span></button>
+    </div>
+    <div class="col-sm-4">
+          <button id="submit-ratings" type="button" class="btn btn-success pull-right">
+            <span class="glyphicon glyphicon-saved" aria-hidden="true"></span> Submit
+        </button>
+    </div>
+    <div class="col-lg-2"></div>
+  </div>
 
-  <div id="shop"></div>
+  <div class="row">
+    <div class="col-lg-2"></div>
+    <div id="correlation" class="col-lg-6"></div>
+  </div>
+
 
 </div><!-- /.container -->
 
