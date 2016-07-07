@@ -140,10 +140,10 @@ function getCorrelation(ratingName) {
       compRevs.push(parseInt(cv));
     }
   }
-  console.log(ratingName);
-  console.log(userRevs);
-  console.log(compRevs);
-  console.log("-------");
+  // console.log(ratingName);
+  // console.log(userRevs);
+  // console.log(compRevs);
+  // console.log("-------");
   return getPearsonCorrelation(userRevs, compRevs);
 }
 
@@ -153,27 +153,65 @@ function submitRatings() {
   for (var i = 0; i < ratingNames.length; i++) {
     corr = getCorrelation(ratingNames[i]);
     corrs.push(corr);
-    msgs += "<br>Your correlation with the " + ratingNames[i] + " rating is " + corr.toFixed(3) + ".";
+    msgs += "<br>Your correlation with the " + ratingNames[i] + " rating is " + corr.toFixed(2) + ".";
   }
   $('#correlation').html(msgs);
+  addChart(ratingNames, corrs);
 }
 
-function submitRatings0() {
-  userRevs = [];
-  compRevs = [];
-  for (var i = 0; i < all_movies.length; i++) {
-    uv = all_movies[i].userRating;
-    cv = all_movies[i].tomatoRating;
-    if (!isNaN(cv) && typeof uv !== "undefined") {
-      userRevs.push(uv);
-      compRevs.push(parseInt(cv));
+function addChart(nms, vals) {
+// http://www.chartjs.org/docs/#bar-chart-introduction
+
+  var ctx = $('#corr-chart');
+  var data = {
+    labels: nms,
+    datasets: [{
+      label: '',
+      backgroundColor: "rgba(255,99,132,0.6)",
+      data: vals,
+    }]
+  };
+  var options = {
+    // scaleShowVerticalLines: false,
+    // scaleShowGridLines: false,
+    // showScale: false,
+    legend: {
+      display: false,
+    },
+    tooltips: {
+      enabled: true,
+      callbacks: {
+        label: function(tooltipItems, data) {
+          return tooltipItems.yLabel.toFixed(2);
+        },
+      },
+    },
+    tooltipTemplate: "<%= datasetLabel %> - <%= value.toFixed(3) %>",
+    scales: {
+      xAxes: [{
+        gridLines: {
+          // display: false,
+        },
+      }],
+      yAxes: [{
+        gridLines: {
+          // display: false,
+        },
+        ticks: {
+          min: -1,
+          max: 1,
+          stepSize: 0.25,
+          beginAtZero: true
+        }
+      }]
     }
-  }
-  val = getPearsonCorrelation(userRevs, compRevs);
-  console.log(userRevs);
-  console.log(compRevs);
-  console.log(val);
-  $('#correlation').html("Your correlation with the Rotten Tomatoes user rating is " + val.toFixed(3) + ".");
+  };
+
+  var barChart = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: options
+  });
 }
 
 $( document ).ready(function() {
