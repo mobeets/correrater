@@ -14,6 +14,7 @@
     <script src="static/js/jquery.min.js"></script>
     <script src="static/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/js/Chart.min.js"></script>
+    <script type="text/javascript" src="static/js/chroma.min.js"></script>
 </head>
 <body>
 
@@ -81,11 +82,15 @@
   </div>
 
   <div class="row">
-    <div class="col-lg-2"></div>
-    <div class="col-lg-4">
+    <div class="col-lg-4"></div>
+    <div id="result-lead" class="col-lg-4">
+      <br><br><br>
+      <a name="result-start"></a>
+      <p class="lead">Your results:</p>
       <canvas id="corr-chart" width="300px;" height="300px;"></canvas>
+      <p class="description">The closer a given rating is to 1.0, the more that rating agreed with you. The more movies you rate, the more accurate your results.</p>
     </div>
-    <div id="correlation" class="col-lg-6"></div>
+    <div id="correlation" class="col-lg-4"></div>
   </div>
 
 

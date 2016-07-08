@@ -1,6 +1,7 @@
 // http://callmenick.com/post/five-star-rating-component-with-javascript-css
 var all_movies = [
 ];
+var barChart;
 
 var ratingNames = ["imdbRating", "tomatoMeter", "tomatoRating", "tomatoUserMeter", "tomatoUserRating"];
 
@@ -155,19 +156,37 @@ function submitRatings() {
     corrs.push(corr);
     msgs += "<br>Your correlation with the " + ratingNames[i] + " rating is " + corr.toFixed(2) + ".";
   }
-  $('#correlation').html(msgs);
+  // $('#correlation').html(msgs);
   addChart(ratingNames, corrs);
 }
 
-function addChart(nms, vals) {
-// http://www.chartjs.org/docs/#bar-chart-introduction
+function updateChart(nms, vals) {
+  barChart.data.datasets[0].data = vals;
+  barChart.update();
+}
 
+function getColors(vals) {
+  f = chroma.scale('RdBu').domain([-1,1]);
+  clrs = [];
+  for(var i = 0; i < vals.length; i++) {
+    clrs.push(f(vals[i]).css());
+  }
+  return clrs;
+}
+
+function addChart(nms, vals) {
+// http://www.chartjs.org/docs/#bar-chart-introduction  
+
+  // baseClr = "rgba(255,99,132,0.6)";
+  clrs = getColors(vals);
+
+  $('#result-lead').show();
   var ctx = $('#corr-chart');
   var data = {
     labels: nms,
     datasets: [{
       label: '',
-      backgroundColor: "rgba(255,99,132,0.6)",
+      backgroundColor: clrs,
       data: vals,
     }]
   };
@@ -207,7 +226,10 @@ function addChart(nms, vals) {
     }
   };
 
-  var barChart = new Chart(ctx, {
+  if (typeof barChart !== "undefined") {
+    barChart.destroy();
+  }
+  barChart = new Chart(ctx, {
     type: 'bar',
     data: data,
     options: options
@@ -217,6 +239,7 @@ function addChart(nms, vals) {
 $( document ).ready(function() {
 
     var shop = $("#shop");
+    $('#result-lead').hide();
 
     fetchRandomMovies();
     $("#add-movie").click(queryMovie);
@@ -226,6 +249,11 @@ $( document ).ready(function() {
         }
     });
     $("#more-movies").click(fetchRandomMovies);
-    $("#submit-ratings").click(submitRatings);
+    $("#submit-ratings").click(function() {
+      submitRatings();
+      $('html, body').animate({
+        scrollTop: $('#result-lead').offset().top
+      }, 500);
+    });
 
 });
