@@ -4,13 +4,15 @@ var all_movies = [
 var barChart;
 
 var ratingNames = ["imdbRating", "tomatoMeter", "tomatoRating", "tomatoUserMeter", "tomatoUserRating"];
+var ratingDisplayNames = ["IMDb rating", "Tomato Meter", "Tomato Avg Critic Rating", "Tomato Audience Score", "Tomato User Avg Rating"];
 
 function buildShopItem(data) {
   var shopItem = document.createElement('div');
 
   var html = '<div class="c-shop-item__img"></div>' +
     '<div class="c-shop-item__details">' +
-      '<h3 class="c-shop-item__title">' + data.title + '</h3>' +
+      '<a href="' + data.tomatoURL + '"><h3 class="c-shop-item__title">' + data.title + '</a> ' +
+      '<span class="c-shop-item__date">(' + data.Year + ')</span></h3>' +
       '<p class="c-shop-item__description">' + data.description + '</p>' +
       '<ul class="c-rating"></ul>' +
     '</div>';
@@ -151,13 +153,20 @@ function getCorrelation(ratingName) {
 function submitRatings() {
   corrs = [];
   msgs = "";
+  maxV = -1; maxNm = "";
   for (var i = 0; i < ratingNames.length; i++) {
     corr = getCorrelation(ratingNames[i]);
+    if (corr > maxV) {
+      maxV = corr;
+      maxNm = ratingDisplayNames[i];
+    }
     corrs.push(corr);
     msgs += "<br>Your correlation with the " + ratingNames[i] + " rating is " + corr.toFixed(2) + ".";
   }
   // $('#correlation').html(msgs);
-  addChart(ratingNames, corrs);
+  // addChart(ratingNames, corrs);
+  addChart(ratingDisplayNames, corrs);
+  $('#rating-pick').html("Your best source for movie ratings is the " + maxNm + ".");
 }
 
 function updateChart(nms, vals) {

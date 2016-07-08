@@ -3,7 +3,46 @@ td.number {
     text-align: right;
 }
 body {
+    font-family: 'Raleway', sans-serif;
     padding-top: 50px;
+}
+#header-container {
+    background: #404040;
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.navbar {
+    /*background: white;*/
+    font-weight: bold;
+    font-family: 'Bungee Hairline', cursive;
+}
+
+h1 {
+    color: white;
+    font-family: 'Bungee Hairline', cursive;
+    font-weight: bold;
+    /*font-family: 'Pacifico', cursive;*/
+    font-size: 60px;
+}
+.description {
+    text-align: center;
+    font-style: oblique;
+    color: #909090;
+}
+.subtitle {
+    font-size: 20px;
+    color: #909090;
+}
+
+
+.movies {
+    font-family: 'Playfair Display', serif;
+}
+.movies a {
+    color: inherit;
 }
 .starter-template {
     padding: 40px 15px;
@@ -15,8 +54,7 @@ body {
 .movies {
     margin: 10px;
 }
-.description {
+#rating-pick {
     text-align: center;
-    font-style: oblique;
-    color: #909090;
 }
+
