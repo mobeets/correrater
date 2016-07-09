@@ -1,19 +1,21 @@
 // http://callmenick.com/post/five-star-rating-component-with-javascript-css
-var all_movies = [
-];
+var randMovCount = 10;
+var movieInds = [];
+var all_movies = [];
 var barChart;
 
 var ratingNames = ["imdbRating", "tomatoMeter", "tomatoRating", "tomatoUserMeter", "tomatoUserRating"];
 var ratingDisplayNames = ["IMDb rating", "Tomato Meter", "Tomato Avg Critic Rating", "Tomato Audience Score", "Tomato User Avg Rating"];
 
 function buildShopItem(data) {
+  data.rating = null;
   var shopItem = document.createElement('div');
 
   var html = '<div class="c-shop-item__img"></div>' +
     '<div class="c-shop-item__details">' +
-      '<a href="' + data.tomatoURL + '"><h3 class="c-shop-item__title">' + data.title + '</a> ' +
+      '<a href="' + data.tomatoURL + '"><h3 class="c-shop-item__title">' + data.Title + '</a> ' +
       '<span class="c-shop-item__date">(' + data.Year + ')</span></h3>' +
-      '<p class="c-shop-item__description">' + data.description + '</p>' +
+      '<p class="c-shop-item__description">' + data.Plot + '</p>' +
       '<span class="c-shop-item__director"><i>Director: ' + data.Director + '<br>Starring: ' + data.Actors + '</i></span></h3>' +
       '<ul class="c-rating"></ul>' +
     '</div>';
@@ -37,27 +39,27 @@ function addRatingWidget(shopItem, data) {
   var r = rating(ratingElement, currentRating, maxRating, callback);
 }
 
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function fetchRandomMovies() {
+  var i = 0;
+  while (i < randMovCount) {
+    ind = getRandomInt(0, movieData.length-1);
+    if ($.inArray(ind, movieInds) == -1) {
+      movieInds.push(ind);
+      addMovie(movieData[ind]);
+      i += 1;
+    }
+  }
+}
+
 function addMovies(objs) {
   for (var i = 0; i < objs.length; i++) {
     addMovie(objs[i]);
   }
-}
-
-function fetchRandomMovies() {
-  $.ajax({
-      type: "GET",
-      url: "random_movies",
-      // data: JSON.stringify(obj),
-      contentType: 'application/json',
-      dataType: 'json',
-      error: function(data) {
-          console.log(data);
-      },
-      success: function(data) {
-          console.log(data["movies"]);
-          addMovies(data["movies"]);
-      }
-  });
 }
 
 function addMovie(obj) {
@@ -65,28 +67,45 @@ function addMovie(obj) {
   addRatingWidget(buildShopItem(obj), obj);
 }
 
-function queryMovie() {
-  // console.log($("#movie-input").val());
-  val = $("#movie-input").val();
-  obj = {"name": val};
-  $.ajax({
-      type: "POST",
-      url: "add_movie",
-      data: JSON.stringify(obj),
-      contentType: 'application/json',
-      dataType: 'json',
-      error: function(data) {
-          console.log("HERE");
-          $('#movie-input').val('');
-          $('#movie-input').attr('placeholder', 'Movie not found! Try again.');
-          console.log(data);
-      },
-      success: function(data) {
-          console.log(data["movie"]);
-          addMovie(data["movie"]);
-      }
-  });
-}
+// function fetchRandomMovies() {
+//   $.ajax({
+//       type: "GET",
+//       url: "random_movies",
+//       // data: JSON.stringify(obj),
+//       contentType: 'application/json',
+//       dataType: 'json',
+//       error: function(data) {
+//           console.log(data);
+//       },
+//       success: function(data) {
+//           console.log(data["movies"]);
+//           addMovies(data["movies"]);
+//       }
+//   });
+// }
+
+// function queryMovie() {
+//   // console.log($("#movie-input").val());
+//   val = $("#movie-input").val();
+//   obj = {"name": val};
+//   $.ajax({
+//       type: "POST",
+//       url: "add_movie",
+//       data: JSON.stringify(obj),
+//       contentType: 'application/json',
+//       dataType: 'json',
+//       error: function(data) {
+//           console.log("HERE");
+//           $('#movie-input').val('');
+//           $('#movie-input').attr('placeholder', 'Movie not found! Try again.');
+//           console.log(data);
+//       },
+//       success: function(data) {
+//           console.log(data["movie"]);
+//           addMovie(data["movie"]);
+//       }
+//   });
+// }
 
 /*
  *  Source: http://stevegardner.net/2012/06/11/javascript-code-to-calculate-the-pearson-correlation-coefficient/
@@ -300,12 +319,12 @@ $( document ).ready(function() {
     $('#result-lead').hide();
 
     fetchRandomMovies();
-    $("#add-movie").click(queryMovie);
-    $("#movie-input").keyup(function(event){
-        if(event.keyCode == 13){
-            $("#add-movie").click();
-        }
-    });
+    // $("#add-movie").click(queryMovie);
+    // $("#movie-input").keyup(function(event){
+    //     if(event.keyCode == 13){
+    //         $("#add-movie").click();
+    //     }
+    // });
     $("#more-movies").click(fetchRandomMovies);
     $("#submit-ratings").click(function() {
       submitRatings();
