@@ -4,6 +4,7 @@ td.number {
 }
 body {
     font-family: 'Raleway', sans-serif;
+    /*font-family: 'Helvetica', sans-serif;*/
     padding-top: 50px;
 }
 #header-container {
@@ -58,3 +59,14 @@ h1 {
     text-align: center;
 }
 
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.row-eq-height > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}

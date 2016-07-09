@@ -14,10 +14,13 @@ function buildShopItem(data) {
       '<a href="' + data.tomatoURL + '"><h3 class="c-shop-item__title">' + data.title + '</a> ' +
       '<span class="c-shop-item__date">(' + data.Year + ')</span></h3>' +
       '<p class="c-shop-item__description">' + data.description + '</p>' +
+      '<span class="c-shop-item__director"><i>Director: ' + data.Director + '<br>Starring: ' + data.Actors + '</i></span></h3>' +
       '<ul class="c-rating"></ul>' +
     '</div>';
 
   shopItem.classList.add('c-shop-item');
+  shopItem.classList.add('col-lg-6');
+  shopItem.classList.add('panel');
   shopItem.innerHTML = html;
   shop.appendChild(shopItem);
 
@@ -73,6 +76,9 @@ function queryMovie() {
       contentType: 'application/json',
       dataType: 'json',
       error: function(data) {
+          console.log("HERE");
+          $('#movie-input').val('');
+          $('#movie-input').attr('placeholder', 'Movie not found! Try again.');
           console.log(data);
       },
       success: function(data) {
@@ -131,6 +137,9 @@ function getPearsonCorrelation(x, y) {
     return answer
 }
 
+function getCorrSE(corr, n) {
+  return Math.sqrt((1 - Math.pow(corr, 2))/(n-2));
+}
 
 function getCorrelation(ratingName) {
   userRevs = [];
@@ -147,26 +156,66 @@ function getCorrelation(ratingName) {
   // console.log(userRevs);
   // console.log(compRevs);
   // console.log("-------");
-  return getPearsonCorrelation(userRevs, compRevs);
+  corr = getPearsonCorrelation(userRevs, compRevs);
+  se = getCorrSE(corr, userRevs.length);
+  return {'r': corr, 'r_se': se, 'n': userRevs.length};
+}
+
+function ratingCount() {
+  c = 0;
+  for (var i = 0; i < all_movies.length; i++) {
+    uv = all_movies[i].userRating;
+    if (!isNaN(uv)) {
+      c += 1;
+    }
+  }
+  return c;
 }
 
 function submitRatings() {
   corrs = [];
+  corr_ses = [];
+  // sigs = [];
+  maxSigNm = ""; maxC = 0;
   msgs = "";
   maxV = -1; maxNm = "";
   for (var i = 0; i < ratingNames.length; i++) {
-    corr = getCorrelation(ratingNames[i]);
+    corr_obj = getCorrelation(ratingNames[i]);
+    corr = corr_obj.r;
+    corr_se = corr_obj.r_se;
+    N = corr_obj.n;
     if (corr > maxV) {
       maxV = corr;
       maxNm = ratingDisplayNames[i];
     }
     corrs.push(corr);
+    corr_ses.push(corr_se);
+    if (N > 10 && corr - corr_se > 0 && corr  > maxC) {
+      maxSigNm = ratingDisplayNames[i];
+      maxC = corr;
+      // sigs.push(ratingDisplayNames[i]);
+    }
     msgs += "<br>Your correlation with the " + ratingNames[i] + " rating is " + corr.toFixed(2) + ".";
   }
   // $('#correlation').html(msgs);
   // addChart(ratingNames, corrs);
   addChart(ratingDisplayNames, corrs);
-  $('#rating-pick').html("Your best source for movie ratings is the " + maxNm + ".");
+
+  greatMsg = "Your best source for movie ratings is the " + maxSigNm + ". ‡";
+  goodMsg = "Your best source for movie ratings is the " + maxNm + ".";
+  badMsg = "None of these movie ratings agreed with you!"
+  moreMsg = " (But I need more ratings to say for sure.)";
+  if (maxC > 0) {
+    msg = greatMsg;
+  } else if (maxV > 0.2) {
+    msg = goodMsg + moreMsg;
+  } else {
+    msg = badMsg + moreMsg;
+  }
+  // if (ratingCount() < 8 ) { 
+  //   msg += " (Try rating more movies for a better estimate.)";
+  // }
+  $('#rating-pick').html(msg);
 }
 
 function updateChart(nms, vals) {

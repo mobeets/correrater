@@ -35,8 +35,9 @@ class Root(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def random_movies(self):
+        NUM_MOVIES = 10
         result = {"operation": "request", "result": "success"}
-        result["movies"] = [self.prep_movie(m) for m in random_movies(5)]
+        result["movies"] = [self.prep_movie(m) for m in random_movies(NUM_MOVIES)]
         return result
 
 def main():
