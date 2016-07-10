@@ -21,7 +21,7 @@ function buildShopItem(data) {
     '</div>';
 
   shopItem.classList.add('c-shop-item');
-  shopItem.classList.add('col-lg-6');
+  // shopItem.classList.add('col-lg-6');
   shopItem.classList.add('panel');
   shopItem.innerHTML = html;
   shop.appendChild(shopItem);
@@ -271,7 +271,7 @@ function addChart(nms, vals) {
     // scaleShowVerticalLines: false,
     // scaleShowGridLines: false,
     // showScale: false,
-    legend: {
+    legend: {      
       display: false,
     },
     tooltips: {
@@ -293,7 +293,13 @@ function addChart(nms, vals) {
         gridLines: {
           // display: false,
         },
+        scaleLabel: {
+          fontSize: 16,
+          display: true,
+          labelString: "Correlation with your ratings"
+        },
         ticks: {
+          fontSize: 16,
           min: -1,
           max: 1,
           stepSize: 0.25,
@@ -314,7 +320,6 @@ function addChart(nms, vals) {
 }
 
 $( document ).ready(function() {
-
     var shop = $("#shop");
     $('#result-lead').hide();
 

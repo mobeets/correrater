@@ -58,7 +58,7 @@ h1 {
 #rating-pick {
     text-align: center;
 }
-
+/*
 .row-eq-height {
   display: -webkit-box;
   display: -webkit-flex;
@@ -69,4 +69,4 @@ h1 {
 .row-eq-height > [class*='col-'] {
   display: flex;
   flex-direction: column;
-}
+}*/
