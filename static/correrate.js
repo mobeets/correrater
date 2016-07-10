@@ -222,7 +222,7 @@ function submitRatings() {
 
   greatMsg = "Your best source for movie ratings is the " + maxSigNm + ". ‡";
   goodMsg = "Your best source for movie ratings is the " + maxNm + ".";
-  badMsg = "None of these movie ratings agreed with you!"
+  badMsg = "No one else's movie ratings agreed with you!"
   moreMsg = " (But I need more ratings to say for sure.)";
   if (maxC > 0) {
     msg = greatMsg;
